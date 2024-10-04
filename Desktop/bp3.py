@@ -14,7 +14,7 @@ if __name__ == '__main__':
         [0.15, 0.25, 0.35]
     ])
     b1 = np.asarray([0.35])
-    # 第二层：输出层具有2个神经元，输入是3个，所以该层的权重系数w的形状为:[3,2]
+    # 第二层：输出层具有2个神经元，输入是3个，所以该层的权    重系数w的形状为:[3,2]
     w = np.asarray([
         [0.4, 0.45],
         [0.5, 0.55],
@@ -55,27 +55,20 @@ if __name__ == '__main__':
     print("=" * 50)
 
     # TODO: 基于矩阵的反向传播 --> 基于Numpy实现全连接神经网络
-    lr = 0.5
 
-    # 定义更新权重的方程
-    def set_w(i, gd):
-        w[i-1] = w[i-1] - lr * gd
+    # 反向传播
+    delta_output = out_o - d
+    grad_w = np.dot(out_h, delta_output)
+    grad_b2 = np.sum(delta_output, axis=0)
+    delta_hidden = np.dot(delta_output, w.T) * sigmoid_derivative(out_h)
+    grad_v = np.dot(x.T, delta_hidden)
+    grad_b1 = np.sum(delta_hidden,axis=0)
 
-    # 输出层梯度计算
-    grad_out_o = (out_o - d) * out_o * (1 - out_o)
+    # 打印梯度
+    print("Gradient for w: ", grad_w)
+    print("Gradient for B2: ", grad_b2)
+    print("Gradient for v: ", grad_v)
+    print("Gradient for B1: ", grad_b1)
 
-    # 计算隐藏层梯度
-    grad_hidden = np.dot(grad_out_o, w.T) * out_h * (1 - out_h)
 
-    # 更新输出层权重
-    for i in range(w.shape[0]):  # 对于每个输出神经元
-        for j in range(w.shape[1]):  # 对于每个连接的隐藏层神经元
-            w[i, j] -= lr * np.sum(grad_out_o[:, j] * out_h[:, i])
-
-    # 更新隐藏层权重
-    for i in range(v.shape[0]):  # 对于每个隐藏层神经元
-        for j in range(v.shape[1]):  # 对于每个连接的输入特征
-            # 确保 j 不超过 x 的第二维大小
-            if j < x.shape[1]:
-                v[i, j] -= lr * np.sum(grad_hidden[:, i] * x[:, j])
 
